@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radium Finder</title>
+<style>
+  body {
+    background-color: #001100;
+    color: #00ff66;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    padding: 2em;
+  }
+  input, select, button {
+    background-color: #002200;
+    color: #00ff66;
+    border: 1px solid #00ff66;
+    margin: 5px;
+    padding: 6px;
+  }
+  button:hover {
+    background-color: #00ff66;
+    color: #001100;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <h2>☢️ RADIUM EBAY SEARCH ☢️</h2>
+  <p>Type or choose your query below:</p>
+  
+  <input id="customSearch" type="text" placeholder="Search term (e.g. antique clock)" size="40">
+  <br>
+
+  <select id="presetSearches" multiple size="6">
+    <option>antique clock</option>
+    <option>antique watch</option>
+    <option>antique pocket watch</option>
+    <option>vintage luminous</option>
+    <option>uranium glass</option>
+    <option>geiger source</option>
+    <option>revigator</option>
+    <option>antique seth thomas</option>
+    <option>antique elgin</option>
+    <option>vintage westclox</option>
+    <option>luminous dials</option>
+  </select>
+  <br>
+
+  <button onclick="searchEbay()">GO</button>
+  <button onclick="searchMultiple()">MULTI</button>
+  <button onclick="randomSearch()">RANDOM</button>
+
+<script>
+const baseURL = "https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&_sop=15&_fsrp=1&rt=nc&Time%2520Period%2520Manufactured=1900%252D1919%7C1920%252D1949%7C1950%252D1959%7C1960%252D1969%7C1970%252D1979&Movement=Mechanical%7C!&Antique=Yes&_nkw=";
+
+function buildURL(term) {
+  return baseURL + encodeURIComponent(term.trim().replace(/\s+/g, '+'));
+}
+
+function searchEbay() {
+  const input = document.getElementById("customSearch").value.trim();
+  if (input) window.open(buildURL(input), "_blank");
+}
+
+function searchMultiple() {
+  const selected = Array.from(document.getElementById("presetSearches").selectedOptions).map(o => o.value);
+  if (selected.length === 0) return alert("Select at least one search term!");
+  selected.forEach(term => window.open(buildURL(term), "_blank"));
+}
+
+function randomSearch() {
+  const options = Array.from(document.getElementById("presetSearches").options);
+  const randomTerm = options[Math.floor(Math.random() * options.length)].value;
+  window.open(buildURL(randomTerm), "_blank");
+}
+</script>
+</body>
+</html>
