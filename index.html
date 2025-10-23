@@ -4,75 +4,122 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Radium Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 <style>
   body {
-    background-color: #001100;
-    color: #00ff66;
-    font-family: 'Courier New', monospace;
+    background: radial-gradient(circle at center, #021 0%, #000 100%);
+    color: #b4ffbb;
+    font-family: 'Orbitron', sans-serif;
     text-align: center;
     padding: 2em;
   }
-  input, select, button {
-    background-color: #002200;
-    color: #00ff66;
-    border: 1px solid #00ff66;
-    margin: 5px;
-    padding: 6px;
+  img {
+    width: 100px;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 6px #00ff88);
+  }
+  h2 {
+    color: #00ff88;
+    text-shadow: 0 0 10px #00ff88;
+  }
+  .container {
+    display: inline-block;
+    background: rgba(0, 40, 0, 0.5);
+    border: 1px solid #00ff88;
+    border-radius: 10px;
+    padding: 1.5em;
+    box-shadow: 0 0 15px #00ff88aa;
+  }
+  input, button, select {
+    margin: 6px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #00ff88;
+    background: rgba(0, 30, 0, 0.8);
+    color: #b4ffbb;
+    font-size: 14px;
+  }
+  input:focus {
+    outline: none;
+    box-shadow: 0 0 8px #00ff88;
+  }
+  button {
+    cursor: pointer;
+    transition: 0.2s;
   }
   button:hover {
-    background-color: #00ff66;
-    color: #001100;
-    cursor: pointer;
+    background: #00ff88;
+    color: #002200;
+  }
+  select {
+    width: 240px;
+    max-height: 150px;
+    overflow-y: scroll;
+  }
+  datalist option {
+    color: #002200;
   }
 </style>
 </head>
 <body>
-  <h2>☢️ RADIUM EBAY SEARCH ☢️</h2>
-  <p>Type or choose your query below:</p>
-  
-  <input id="customSearch" type="text" placeholder="Search term (e.g. antique clock)" size="40">
-  <br>
-
-  <select id="presetSearches" multiple size="6">
-    <option>antique clock</option>
-    <option>antique watch</option>
-    <option>antique pocket watch</option>
-    <option>vintage luminous</option>
-    <option>uranium glass</option>
-    <option>geiger source</option>
-    <option>revigator</option>
-    <option>antique seth thomas</option>
-    <option>antique elgin</option>
-    <option>vintage westclox</option>
-    <option>luminous dials</option>
-  </select>
-  <br>
-
-  <button onclick="searchEbay()">GO</button>
-  <button onclick="searchMultiple()">MULTI</button>
-  <button onclick="randomSearch()">RANDOM</button>
+  <img src="icon128.png" alt="Radium Clock Icon">
+  <h2>RADIUM EBAY SEARCH</h2>
+  <div class="container">
+    <input id="customSearch" type="text" list="suggestions" placeholder="Search term (e.g. antique clock)" size="35">
+    <datalist id="suggestions"></datalist>
+    <br>
+    <button onclick="searchEbay()">Go</button>
+    <button onclick="searchMultiple()">Multi</button>
+    <button onclick="randomSearch()">Random</button>
+    <br><br>
+    <select id="presetSearches" multiple size="8"></select>
+  </div>
 
 <script>
 const baseURL = "https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&_sop=15&_fsrp=1&rt=nc&Time%2520Period%2520Manufactured=1900%252D1919%7C1920%252D1949%7C1950%252D1959%7C1960%252D1969%7C1970%252D1979&Movement=Mechanical%7C!&Antique=Yes&_nkw=";
 
+const presetTerms = [
+  "antique clock","antique watch","antique pocket watch","antique timer","antique compass",
+  "antique stopwatch","antique auto clock","antique gauge","vintage watch","vintage pocket watch",
+  "vintage timer","vintage stopwatch","vintage auto clock","vintage gauge",
+  "antique clock lot","antique watch lot","antique pocket watch lot",
+  "vintage clock lot","vintage watch lot","vintage pocket watch lot",
+  "luminous","luminous clocks","luminous watch","luminous dials","radium","rad",
+  "scintillation","nuclear","undark","marvelite","antique westclox","vintage westclox",
+  "antique seth thomas","vintage seth thomas","antique endura","vintage endura",
+  "antique elgin","vintage elgin","antique ingraham","vintage ingraham",
+  "antique ingersoll","vintage ingersoll","antique semca","vintage semca",
+  "antique phinney-walker","vintage phinney-walker","vintage luminous",
+  "antique luminous","revigator","radioactive","geiger source",
+  "uranium","uranium glass","vaseline glass","fiestaware"
+];
+
+// populate dropdown and datalist
+const select = document.getElementById("presetSearches");
+const datalist = document.getElementById("suggestions");
+presetTerms.forEach(term => {
+  const opt1 = document.createElement("option");
+  opt1.value = term;
+  datalist.appendChild(opt1);
+  const opt2 = document.createElement("option");
+  opt2.textContent = term;
+  select.appendChild(opt2);
+});
+
 function buildURL(term) {
   return baseURL + encodeURIComponent(term.trim().replace(/\s+/g, '+'));
 }
-
 function searchEbay() {
   const input = document.getElementById("customSearch").value.trim();
   if (input) window.open(buildURL(input), "_blank");
 }
-
 function searchMultiple() {
-  const selected = Array.from(document.getElementById("presetSearches").selectedOptions).map(o => o.value);
+  const selected = Array.from(select.selectedOptions).map(o => o.value);
   if (selected.length === 0) return alert("Select at least one search term!");
   selected.forEach(term => window.open(buildURL(term), "_blank"));
 }
-
 function randomSearch() {
-  const options = Array.from(document.getElementById("presetSearches").options);
-  const randomTerm = options[Math.floor(Math.random() * options.length)].value;
+  const randomTerm = presetTerms[Math.floor(Math.random() * presetTerms.length)];
   window.open(buildURL(randomTerm), "_blank");
 }
 </script>
