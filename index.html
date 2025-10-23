@@ -95,14 +95,23 @@
   </div>
 
 <script>
-/* ✅ BASE URL: matches your original exactly */
+/* base with date/mechanical filters (used for single/multi/random) */
 function buildEbayURL(term) {
-  const filters = "&Time%2520Period%2520Manufactured=1900%252D1919%7C1920%252D1949%7C1950%252D1959%7C1960%252D1969%7C1970%252D1979&Movement=Mechanical%7CAutomatic%2520Mechanical%7C!&Antique=Yes";
-  const base = "https://www.ebay.com/sch/i.html?_dcat=261602&_fsrp=1&rt=nc&_from=R40&_sacat=0&_sop=15&_nkw=";
-  return base + encodeURIComponent(term.trim().replace(/\s+/g, '+')) + filters;
+  const filters =
+    "&Time%2520Period%2520Manufactured=1900%252D1919%7C1920%252D1949%7C1950%252D1959%7C1960%252D1969%7C1970%252D1979&Movement=Mechanical%7CAutomatic%2520Mechanical%7C!&Antique=Yes";
+  const base =
+    "https://www.ebay.com/sch/i.html?_dcat=261602&_fsrp=1&rt=nc&_from=R40&_sacat=0&_sop=15&_nkw=";
+  return base + encodeURIComponent(term.trim().replace(/\s+/g, "+")) + filters;
 }
 
-/* ✅ Preset list */
+/* plain search (no filters) */
+function buildPlainURL(term) {
+  return (
+    "https://www.ebay.com/sch/i.html?_nkw=" +
+    encodeURIComponent(term.trim().replace(/\s+/g, "+"))
+  );
+}
+
 const presetTerms = [
   "antique clock","antique watch","antique pocket watch","antique timer","antique compass",
   "antique stopwatch","antique auto clock","antique gauge","vintage watch","vintage pocket watch",
@@ -119,40 +128,49 @@ const presetTerms = [
   "uranium","uranium glass","vaseline glass","fiestaware"
 ];
 
-/* ✅ Load presets and autocomplete */
 const select = document.getElementById("presetSearches");
 const datalist = document.getElementById("suggestions");
-presetTerms.forEach(term => {
+
+/* populate lists */
+presetTerms.forEach((term) => {
   const opt1 = document.createElement("option");
   opt1.value = term;
   datalist.appendChild(opt1);
+
   const opt2 = document.createElement("option");
   opt2.textContent = term;
   select.appendChild(opt2);
 });
 
-/* ✅ Main search buttons */
+/* ✅ double-click opens immediately */
+select.addEventListener("dblclick", (e) => {
+  const term = e.target.value || e.target.textContent;
+  if (term) window.open(buildEbayURL(term), "_blank");
+});
+
+/* buttons */
 function searchEbay() {
   const input = document.getElementById("customSearch").value.trim();
   if (input) window.open(buildEbayURL(input), "_blank");
 }
 function searchMultiple() {
-  const selected = Array.from(select.selectedOptions).map(o => o.value);
+  const selected = Array.from(select.selectedOptions).map((o) => o.value);
   if (!selected.length) return alert("Select at least one search term!");
-  selected.forEach(term => window.open(buildEbayURL(term), "_blank"));
+  selected.forEach((term) => window.open(buildEbayURL(term), "_blank"));
 }
 function randomSearch() {
-  const randomTerm = presetTerms[Math.floor(Math.random() * presetTerms.length)];
+  const randomTerm =
+    presetTerms[Math.floor(Math.random() * presetTerms.length)];
   window.open(buildEbayURL(randomTerm), "_blank");
 }
 
-/* ✅ Open-All category selector */
+/* ✅ open-all: plain keyword version */
 function openCategory() {
-  const category = document.getElementById("categorySelect").value;
+  const category = document.getElementById("categorySelect").value.toLowerCase();
   if (!category) return alert("Pick a category first!");
-  const matches = presetTerms.filter(term => term.toLowerCase().includes(category.toLowerCase()));
+  const matches = presetTerms.filter((t) => t.toLowerCase().includes(category));
   if (!matches.length) return alert("No matches found!");
-  matches.forEach(term => window.open(buildEbayURL(term), "_blank"));
+  matches.forEach((term) => window.open(buildPlainURL(term), "_blank"));
 }
 </script>
 </body>
