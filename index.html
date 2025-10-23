@@ -3,20 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Radium Search Tool</title>
+<title>Radium Finder v4</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 <style>
   body {
-    background: radial-gradient(circle at center, #021 0%, #000 100%);
+    background: radial-gradient(circle at center, #022 0%, #000 100%);
     color: #b4ffbb;
     font-family: 'Orbitron', sans-serif;
     text-align: center;
     padding: 2em;
+    overflow-x: hidden;
   }
   img {
     width: 100px;
     opacity: 0.8;
-    filter: drop-shadow(0 0 6px #00ff88);
+    filter: drop-shadow(0 0 10px #00ff88);
+    animation: pulse 3s infinite alternate;
+  }
+  @keyframes pulse {
+    from { filter: drop-shadow(0 0 6px #00ff88); }
+    to { filter: drop-shadow(0 0 20px #00ffcc); }
   }
   h2 {
     color: #00ff88;
@@ -52,12 +58,12 @@
     color: #002200;
   }
   select {
-    width: 240px;
+    width: 260px;
     max-height: 150px;
     overflow-y: scroll;
   }
-  datalist option {
-    color: #002200;
+  .openAllBox {
+    margin-top: 12px;
   }
 </style>
 </head>
@@ -73,11 +79,30 @@
     <button onclick="randomSearch()">Random</button>
     <br><br>
     <select id="presetSearches" multiple size="8"></select>
+    <div class="openAllBox">
+      <label for="categorySelect">Open all related to: </label>
+      <select id="categorySelect">
+        <option value="">-- choose --</option>
+        <option value="antique">Antique</option>
+        <option value="vintage">Vintage</option>
+        <option value="clock">Clock</option>
+        <option value="watch">Watch</option>
+        <option value="pocket watch">Pocket Watch</option>
+        <option value="luminous">Luminous</option>
+      </select>
+      <button onclick="openCategory()">Open All</button>
+    </div>
   </div>
 
 <script>
-const baseURL = "https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&_sop=15&_fsrp=1&rt=nc&Time%2520Period%2520Manufactured=1900%252D1919%7C1920%252D1949%7C1950%252D1959%7C1960%252D1969%7C1970%252D1979&Movement=Mechanical%7C!&Antique=Yes&_nkw=";
+/* ✅ BASE URL: matches your original exactly */
+function buildEbayURL(term) {
+  const filters = "&Time%2520Period%2520Manufactured=1900%252D1919%7C1920%252D1949%7C1950%252D1959%7C1960%252D1969%7C1970%252D1979&Movement=Mechanical%7CAutomatic%2520Mechanical%7C!&Antique=Yes";
+  const base = "https://www.ebay.com/sch/i.html?_dcat=261602&_fsrp=1&rt=nc&_from=R40&_sacat=0&_sop=15&_nkw=";
+  return base + encodeURIComponent(term.trim().replace(/\s+/g, '+')) + filters;
+}
 
+/* ✅ Preset list */
 const presetTerms = [
   "antique clock","antique watch","antique pocket watch","antique timer","antique compass",
   "antique stopwatch","antique auto clock","antique gauge","vintage watch","vintage pocket watch",
@@ -94,7 +119,7 @@ const presetTerms = [
   "uranium","uranium glass","vaseline glass","fiestaware"
 ];
 
-// populate dropdown and datalist
+/* ✅ Load presets and autocomplete */
 const select = document.getElementById("presetSearches");
 const datalist = document.getElementById("suggestions");
 presetTerms.forEach(term => {
@@ -106,21 +131,28 @@ presetTerms.forEach(term => {
   select.appendChild(opt2);
 });
 
-function buildURL(term) {
-  return baseURL + encodeURIComponent(term.trim().replace(/\s+/g, '+'));
-}
+/* ✅ Main search buttons */
 function searchEbay() {
   const input = document.getElementById("customSearch").value.trim();
-  if (input) window.open(buildURL(input), "_blank");
+  if (input) window.open(buildEbayURL(input), "_blank");
 }
 function searchMultiple() {
   const selected = Array.from(select.selectedOptions).map(o => o.value);
-  if (selected.length === 0) return alert("Select at least one search term!");
-  selected.forEach(term => window.open(buildURL(term), "_blank"));
+  if (!selected.length) return alert("Select at least one search term!");
+  selected.forEach(term => window.open(buildEbayURL(term), "_blank"));
 }
 function randomSearch() {
   const randomTerm = presetTerms[Math.floor(Math.random() * presetTerms.length)];
-  window.open(buildURL(randomTerm), "_blank");
+  window.open(buildEbayURL(randomTerm), "_blank");
+}
+
+/* ✅ Open-All category selector */
+function openCategory() {
+  const category = document.getElementById("categorySelect").value;
+  if (!category) return alert("Pick a category first!");
+  const matches = presetTerms.filter(term => term.toLowerCase().includes(category.toLowerCase()));
+  if (!matches.length) return alert("No matches found!");
+  matches.forEach(term => window.open(buildEbayURL(term), "_blank"));
 }
 </script>
 </body>
