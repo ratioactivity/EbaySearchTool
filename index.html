@@ -209,22 +209,16 @@ vintage pocket watch lot
   </textarea>
 
 <script>
-/* base with date/mechanical filters (used for single/multi/random) */
+/* basic search URL builder */
 function buildEbayURL(term) {
-  const filters =
-    "&Time%2520Period%2520Manufactured=1900%252D1919%7C1920%252D1949%7C1950%252D1959%7C1960%252D1969%7C1970%252D1979&Movement=Mechanical%7CAutomatic%2520Mechanical%7C!&Antique=Yes";
-  const base =
-    "https://www.ebay.com/sch/i.html?_dcat=261602&_fsrp=1&rt=nc&_from=R40&_sacat=0&_sop=15&_nkw=";
-  return base + encodeURIComponent(term.trim().replace(/\s+/g, "+")) + filters;
+  return (
+    "https://www.ebay.com/sch/i.html?_nkw=" +
+    encodeURIComponent(term.trim().replace(/\s+/g, " "))
+  );
 }
 
 /* plain search (no filters) */
-function buildPlainURL(term) {
-  return (
-    "https://www.ebay.com/sch/i.html?_nkw=" +
-    encodeURIComponent(term.trim().replace(/\s+/g, "+"))
-  );
-}
+const buildPlainURL = buildEbayURL;
 
 function loadPresetTerms() {
   const source = document.getElementById("presetTermsSource");
