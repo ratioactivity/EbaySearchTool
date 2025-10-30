@@ -211,10 +211,10 @@ vintage pocket watch lot
 <script>
 /* basic search URL builder */
 function buildEbayURL(term) {
-  return (
-    "https://www.ebay.com/sch/i.html?_nkw=" +
-    encodeURIComponent(term.trim().replace(/\s+/g, " "))
-  );
+  const normalized = term.trim().replace(/\s+/g, " ");
+  const url = new URL("https://www.ebay.com/sch/i.html");
+  url.searchParams.set("_nkw", normalized);
+  return url.href.replace(/\+/g, "%20");
 }
 
 /* plain search (no filters) */
