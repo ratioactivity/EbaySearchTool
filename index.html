@@ -94,59 +94,144 @@
     </div>
   </div>
 
-<script>
-/* base with date/mechanical filters (used for single/multi/random) */
-function buildEbayURL(term) {
-  const filters =
-    "&Time%2520Period%2520Manufactured=1900%252D1919%7C1920%252D1949%7C1950%252D1959%7C1960%252D1969%7C1970%252D1979&Movement=Mechanical%7CAutomatic%2520Mechanical%7C!&Antique=Yes";
-  const base =
-    "https://www.ebay.com/sch/i.html?_dcat=261602&_fsrp=1&rt=nc&_from=R40&_sacat=0&_sop=15&_nkw=";
-  return base + encodeURIComponent(term.trim().replace(/\s+/g, "+")) + filters;
-}
+  <!-- Add one search term per line in the hidden textarea below. -->
+  <textarea id="presetTermsSource" hidden>
+antique clock
+vintage clock
+antique timer
+vintage timer
+antique desk clock
+antique mantel clock
+darkroom timer
+darkroom clock
+antique baby ben
+antique big ben
+antique pocket ben
+antique general electric clock
+antique telechron
+antique westclox
+vintage westclox
+antique seth thomas
+vintage seth thomas
+antique aircraft instruments
+antique auto clock
+vintage auto clock
+8 day clock
+military clock
+WW2 clock
+antique submarine clock
+civil defense
+antique watch
+vintage watch
+antique mechanical watches
+antique pocket watch
+vintage pocket watch
+military watch
+military pocket watch
+WW2 watch
+USSR watch
+antique soviet watch
+swiss military watch
+Bulova watch
+Bulova watch hands
+military watch hands
+radiolite
+glo-ben
+BESTFIT hands
+antique watch lot
+vintage watch lot
+antique pocket watch lot
+vintage pocket watch lot
+antique stopwatch
+vintage stopwatch
+luminous
+luminous clocks
+luminous watch
+luminous dials
+vintage luminous
+antique luminous
+watch-dial painting
+antique gauge
+vintage gauge
+military gauge
+WW2 gauge
+military aviation instrument
+military aeronautical instrument
+military maritime instrument
+antique aeronautical instruments
+antique maritime instruments
+antique submarine gauge
+antique submarine dial
+antique anti-aircraft dial
+antique anti-submarine dial
+military aviation dial
+antique engine meter
+antique pressure gauge
+antique compass
+lensatic compass
+antique flight compass
+Gilbert U-238 Atomic Energy Laboratory
+bendix dosimeter
+bendix aircraft
+hamilton standard aircraft
+radium
+rad
+radioactive
+radioactive demonstration kit
+geiger source
+scintillation
+nuclear
+tritium
+polonium
+plutonium
+uranium
+uranium glass
+vaseline glass
+fiestaware
+revigator
+undark
+marvelite
+radium ephemera
+radium quack medicine
+radium cigarettes
+tho-radia
+united states radium corporation
+radium dial company
+biltmore pocket watch
+radiography history
+radioactive history
+antique clock lot
+vintage clock lot
+antique watch lot
+vintage watch lot
+antique pocket watch lot
+vintage pocket watch lot
+  </textarea>
 
-/* plain search (no filters) */
-function buildPlainURL(term) {
+<script>
+/* basic search URL builder */
+function buildEbayURL(term) {
   return (
     "https://www.ebay.com/sch/i.html?_nkw=" +
-    encodeURIComponent(term.trim().replace(/\s+/g, "+"))
+    encodeURIComponent(term.trim().replace(/\s+/g, " "))
   );
 }
 
-const presetTerms = [
-  "antique clock","vintage clock","antique timer","vintage timer",
-"antique desk clock","antique mantel clock","darkroom timer","darkroom clock",
-"antique baby ben","antique big ben","antique pocket ben",
-"antique general electric clock","antique telechron",
-"antique westclox","vintage westclox","antique seth thomas","vintage seth thomas",
-"antique aircraft instruments","antique auto clock","vintage auto clock","8 day clock",
-"military clock","WW2 clock","antique submarine clock",
-"civil defense","antique watch","vintage watch","antique mechanical watches",
-"antique pocket watch","vintage pocket watch",
-"military watch","military pocket watch","WW2 watch","USSR watch",
-"antique soviet watch","swiss military watch","Bulova watch",
-"Bulova watch hands","military watch hands","radiolite","glo-ben","BESTFIT hands",
-"antique watch lot","vintage watch lot","antique pocket watch lot","vintage pocket watch lot",
-"antique stopwatch","vintage stopwatch",
-"luminous","luminous clocks","luminous watch","luminous dials",
-"vintage luminous","antique luminous","watch-dial painting",
-"antique gauge","vintage gauge",
-"military gauge","WW2 gauge","military aviation instrument",
-"military aeronautical instrument","military maritime instrument",
-"antique aeronautical instruments","antique maritime instruments",
-"antique submarine gauge","antique submarine dial",
-"antique anti-aircraft dial","antique anti-submarine dial",
-"military aviation dial","antique engine meter","antique pressure gauge",
-"antique compass","lensatic compass","antique flight compass","Gilbert U-238 Atomic Energy Laboratory",
-"bendix dosimeter","bendix aircraft","hamilton standard aircraft",
-"radium","rad","radioactive","radioactive demonstration kit","geiger source",
-"scintillation","nuclear","tritium","polonium","plutonium","uranium","uranium glass",
-"vaseline glass","fiestaware","revigator","undark","marvelite","radium ephemera",
-"radium quack medicine","radium cigarettes","tho-radia","united states radium corporation",
-"radium dial company","biltmore pocket watch","radiography history","radioactive history",
-"antique clock lot","vintage clock lot",
-"antique watch lot","vintage watch lot",
-"antique pocket watch lot","vintage pocket watch lot",
-];
+/* plain search (no filters) */
+const buildPlainURL = buildEbayURL;
+
+function loadPresetTerms() {
+  const source = document.getElementById("presetTermsSource");
+  if (!source) return [];
+  const raw = source.value || source.textContent || "";
+  return raw
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length);
+}
+
+const presetTerms = loadPresetTerms();
+
 
 const select = document.getElementById("presetSearches");
 const datalist = document.getElementById("suggestions");
@@ -179,6 +264,8 @@ function searchMultiple() {
   selected.forEach((term) => window.open(buildEbayURL(term), "_blank"));
 }
 function randomSearch() {
+  if (!presetTerms.length)
+    return alert("Add preset searches to the list first!");
   const randomTerm =
     presetTerms[Math.floor(Math.random() * presetTerms.length)];
   window.open(buildEbayURL(randomTerm), "_blank");
